@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="400px" src="maps.png" alt="MCP Maps 3D Logo" />
+  <img width="400px" src="" alt="MCP Maps 3D Logo" />
   <h2 align="center">MCP Maps 3D - A Conversational 3D Globe</h2>
   <p align="center">Explore a photorealistic 3D model of the Earth using natural language commands, powered by Google Gemini and the Model Context Protocol (MCP).</p>
 </p>
