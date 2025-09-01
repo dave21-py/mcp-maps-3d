@@ -1,0 +1,8 @@
+# Secret API keys
+.env
+
+# Downloaded libraries (we can always reinstall these)
+node_modules
+
+# Folder for the final built project
+dist
