@@ -113,9 +113,9 @@ When deploying, ensure you use your platform's system for managing environment v
 
 ## 🙌 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/dave21-py/mcp-maps-3d/issues).```
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/dave21-py/mcp-maps-3d/issues).
+
+Would love to hear your guys feedback on this project, also dont forget to connect with me on linkedIn: https://www.linkedin.com/in/david-geddam/
 
 
-After the last command finishes, refresh your GitHub repository page in your browser. Your beautiful, professional new README will be there for everyone to see.
 
-Congratulations on completing your project from start to finish
