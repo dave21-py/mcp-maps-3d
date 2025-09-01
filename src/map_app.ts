@@ -120,6 +120,7 @@ export class MapApp extends LitElement {
   @state() messages: HTMLElement[] = [];
   @state() mapInitialized = false;
   @state() mapError = '';
+  @state() private isChatOpen = false; // Chat starts minimized
 
   // Google Maps: Instance of the Google Maps 3D map.
   private map?: any;
@@ -570,6 +571,10 @@ You can find this constant near the top of the map_app.ts file.`;
 
   async sendMessageAction(message?: string, role?: string) {
     if (this.chatState !== ChatState.IDLE) return;
+    // Add this block
+if (!this.isChatOpen) {
+  this.isChatOpen = true;
+}
 
     let msg = '';
     let usedComponentInput = false; // Flag to track if component's input was used
@@ -631,12 +636,9 @@ You can find this constant near the top of the map_app.ts file.`;
   }
 
   render() {
-    // Google Maps: Initial camera parameters for the <gmp-map-3d> element.
-    const initialCenter = '0,0,100'; // lat,lng,altitude
-    const initialRange = '20000000'; // View range in meters
-    const initialTilt = '45'; // Camera tilt in degrees
-    const initialHeading = '0'; // Camera heading in degrees
-
+    // The `chat-open` class will be added/removed based on our state
+    const sidebarClasses = { 'sidebar': true, 'chat-open': this.isChatOpen };
+  
     return html`<div class="gdm-map-app">
       <div
         class="main-container"
@@ -650,110 +652,65 @@ You can find this constant near the top of the map_app.ts file.`;
               >${this.mapError}</div
             >`
           : ''}
-        <!-- Google Maps: The core 3D Map custom element -->
         <gmp-map-3d
           id="mapContainer"
           style="height: 100%; width: 100%;"
           aria-label="Google Photorealistic 3D Map Display"
           mode="hybrid"
-          center="${initialCenter}"
-          heading="${initialHeading}"
-          tilt="${initialTilt}"
-          range="${initialRange}"
-          internal-usage-attribution-ids="gmp_aistudio_threedmapjsmcp_v0.1_showcase"
           default-ui-disabled="true"
           role="application">
         </gmp-map-3d>
       </div>
-      <div class="sidebar" role="complementary" aria-labelledby="chat-heading">
-        <div class="selector" role="tablist" aria-label="Chat providers">
-          <button
-            id="geminiTab"
-            role="tab"
-            aria-selected=${this.selectedChatTab === ChatTab.GEMINI}
-            aria-controls="chat-panel"
-            class=${classMap({
-              'selected-tab': this.selectedChatTab === ChatTab.GEMINI,
-            })}
-            @click=${() => {
-              this.selectedChatTab = ChatTab.GEMINI;
-            }}>
-            <span id="chat-heading">Gemini</span>
+  
+      <div class=${classMap(sidebarClasses)}>
+        
+        <!-- This content only shows when the chat is open -->
+        ${this.isChatOpen ? html`
+          <button class="minimize-chat-btn" @click=${() => { this.isChatOpen = false; }} aria-label="Minimize Chat">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"></path></svg>
           </button>
-        </div>
-        <div
-          id="chat-panel"
-          role="tabpanel"
-          aria-labelledby="geminiTab"
-          class=${classMap({
-            'tabcontent': true,
-            'showtab': this.selectedChatTab === ChatTab.GEMINI,
-          })}>
           <div class="chat-messages" aria-live="polite" aria-atomic="false">
-            ${this.messages}
             <div id="anchor"></div>
+            ${this.messages}
           </div>
-          <div class="footer">
-            <div
-              id="chatStatus"
-              aria-live="assertive"
-              class=${classMap({'hidden': this.chatState === ChatState.IDLE})}>
-              ${this.chatState === ChatState.GENERATING
-                ? html`${ICON_BUSY} Generating...`
-                : html``}
-              ${this.chatState === ChatState.THINKING
-                ? html`${ICON_BUSY} Thinking...`
-                : html``}
-              ${this.chatState === ChatState.EXECUTING
-                ? html`${ICON_BUSY} Executing...`
-                : html``}
-            </div>
-            <div
-              id="inputArea"
-              role="form"
-              aria-labelledby="message-input-label">
-              <label id="message-input-label" class="hidden"
-                >Type your message</label
-              >
-              <input
-                type="text"
-                id="messageInput"
-                .value=${this.inputMessage}
-                @input=${(e: InputEvent) => {
-                  this.inputMessage = (e.target as HTMLInputElement).value;
-                }}
-                @keydown=${(e: KeyboardEvent) => {
-                  this.inputKeyDownAction(e);
-                }}
-                placeholder="Type your message..."
-                autocomplete="off"
-                aria-labelledby="message-input-label"
-                aria-describedby="sendButton-desc" />
-              <button
-                id="sendButton"
-                @click=${() => {
-                  this.sendMessageAction();
-                }}
-                aria-label="Send message"
-                aria-describedby="sendButton-desc"
-                ?disabled=${this.chatState !== ChatState.IDLE}
-                class=${classMap({
-                  'disabled': this.chatState !== ChatState.IDLE,
-                })}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="30px"
-                  viewBox="0 -960 960 960"
-                  width="30px"
-                  fill="currentColor"
-                  aria-hidden="true">
-                  <path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z" />
-                </svg>
-              </button>
-              <p id="sendButton-desc" class="hidden"
-                >Sends the typed message to the AI.</p
-              >
-            </div>
+        ` : ''}
+        
+        <!-- The input bar is always visible -->
+        <div class="footer">
+          <div id="inputArea" role="form" aria-labelledby="message-input-label">
+            <input
+              type="text"
+              id="messageInput"
+              .value=${this.inputMessage}
+              @input=${(e: InputEvent) => {
+                this.inputMessage = (e.target as HTMLInputElement).value;
+              }}
+              @keydown=${(e: KeyboardEvent) => {
+                this.inputKeyDownAction(e);
+              }}
+              @focus=${() => { if(!this.isChatOpen) this.isChatOpen = true; }}
+              placeholder="Type your message..."
+              autocomplete="off" />
+            <button
+              id="sendButton"
+              @click=${() => {
+                this.sendMessageAction();
+              }}
+              aria-label="Send message"
+              ?disabled=${this.chatState !== ChatState.IDLE}
+              class=${classMap({
+                'disabled': this.chatState !== ChatState.IDLE,
+              })}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="30px"
+                viewBox="0 -960 960 960"
+                width="30px"
+                fill="currentColor"
+                aria-hidden="true">
+                <path d="M120-160v-240l320-80-320-80v-240l760 320-760 320Z" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
