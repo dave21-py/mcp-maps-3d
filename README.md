@@ -40,12 +40,12 @@ This is made possible by the **Model Context Protocol (MCP)**, which acts as a r
 
 Prompt 1
 <p align="center">
-  <img width="400px" src="maps1.png" alt="MCP Maps 3D Logo" />
+  <img width="800px" src="maps1.png" alt="MCP Maps 3D Logo" />
 </p>
 
 Prompt 2
 <p align="center">
-  <img width="400px" src="maps2.png" alt="MCP Maps 3D Logo" />
+  <img width="800px" src="maps2.png" alt="MCP Maps 3D Logo" />
 </p>
 
 ---
